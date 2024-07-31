@@ -4,6 +4,20 @@ import { useState } from 'react'
 function App() {
   const [tasks, setTasks] = useState(['asdf1', 'asdf2', 'asdf3'])
 
+  function addTask (e) {
+    if (e && e.key !== 'Enter') {
+      return
+    }
+    const task = document.getElementById('addTask').value
+    if (task === '') {
+      return
+    }
+    setTasks((prevState) => {
+      return [...prevState, task]
+    })
+    document.getElementById('addTask').value = ''
+  }
+
   function handleCompleteTask (task) {
     setTasks((prevState) => {
       const index = prevState.indexOf(task)
@@ -46,10 +60,10 @@ function App() {
     <div className='container'>
         <div className='row'>
           <div className='col-auto'>
-            <button className='btn btn-primary'>Add Task</button>
+            <button className='btn btn-primary' onClick={() => addTask()}>Add Task</button>
           </div>
           <div className='col-auto'>
-            <input id='addTask' className='form-control col-auto' type='text'></input>
+            <input id='addTask' className='form-control col-auto' type='text' onKeyUp={addTask}></input>
           </div>
         </div>
         <ul id='taskList' className='list-group container'>
