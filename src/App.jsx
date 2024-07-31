@@ -4,8 +4,14 @@ import { useState } from 'react'
 function App() {
   const [tasks, setTasks] = useState(['asdf1', 'asdf2', 'asdf3'])
 
-  function handleCompleteTask () {
-    throw new Error('Not implemented')
+  function handleCompleteTask (task) {
+    setTasks((prevState) => {
+      const index = prevState.indexOf(task)
+      const newTasks = [...prevState]
+      newTasks.splice(index, 1)
+      return newTasks
+    })
+
   }
 
   function increaseTaskPriority (task) {
@@ -48,7 +54,7 @@ function App() {
         </div>
         <ul id='taskList' className='list-group container'>
           {tasks.map((task, index) => (
-            <li key={index} className='d-flex justify-content-between list-group-item'>
+            <li key={index} className='d-flex justify-content-between align-items-center list-group-item'>
               <div className='d-flex align-items-center'>
                 <div className='d-flex flex-column'>
                   <svg onClick={() => increaseTaskPriority(task)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-up-short" viewBox="0 0 16 16">
@@ -60,7 +66,7 @@ function App() {
                 </div>
                 <p className='ms-2 mb-0 h-auto'>{task}</p>
               </div>
-              <input className='form-check-input' type='checkbox' onChange={() => handleCompleteTask}></input>
+              <button className='btn btn-sm btn-primary h-50' type='button' onClick={() => handleCompleteTask(task)}>Complete</button>
             </li>
           ))}
         </ul>
