@@ -1,8 +1,23 @@
 import './App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
-  const [tasks, setTasks] = useState(['asdf1', 'asdf2', 'asdf3'])
+  const [tasks, setTasks] = useState([])
+
+  useEffect(() => {
+    retrieveTasks()
+  }, [])
+
+  function retrieveTasks () {
+    const tasks = localStorage.getItem('tasks')
+    if (tasks) {
+      setTasks(JSON.parse(tasks))
+    }
+  }
+
+  function storeTasks (tasks) {
+    localStorage.setItem('tasks', JSON.stringify(tasks))
+  }
 
   function addTask (e) {
     if (e && e.key !== 'Enter') {
@@ -13,6 +28,7 @@ function App() {
       return
     }
     setTasks((prevState) => {
+      storeTasks([...prevState, task])
       return [...prevState, task]
     })
     document.getElementById('addTask').value = ''
@@ -23,6 +39,7 @@ function App() {
       const index = prevState.indexOf(task)
       const newTasks = [...prevState]
       newTasks.splice(index, 1)
+      storeTasks(newTasks)
       return newTasks
     })
 
@@ -38,6 +55,7 @@ function App() {
       const temp = newTasks[index]
       newTasks[index] = newTasks[index - 1]
       newTasks[index - 1] = temp
+      storeTasks(newTasks)
       return newTasks
     })
   }
@@ -52,6 +70,7 @@ function App() {
       const temp = newTasks[index]
       newTasks[index] = newTasks[index + 1]
       newTasks[index + 1] = temp
+      storeTasks(newTasks)
       return newTasks
       })
   }
