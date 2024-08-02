@@ -12,6 +12,8 @@ function App() {
   useEffect(() => {
     const storedTasks = retrieveTasks()
     setTasks(storedTasks || [])
+    const storedTags = retrieveTags()
+    setTags(storedTags)
   }, [])
 
   function retrieveTasks () {
@@ -23,6 +25,21 @@ function App() {
   function storeTasks (tasks) {
     localStorage.setItem('tasks', JSON.stringify(tasks))
     retrieveTasks()
+  }
+
+  function retrieveTags () {
+    const tags = JSON.parse(localStorage.getItem('tags'))
+    if (!tags) return [
+      { id: 1, name: 'Smelting'}, 
+      { id: 2, name: 'Manufacturing' }, 
+      { id: 3, name: 'Mining'}, 
+    ]
+    return tags
+  }
+
+  function storeTags (tags) {
+    localStorage.setItem('tags', JSON.stringify(tags))
+    retrieveTags()
   }
 
   const addTask = (e) => {
@@ -73,26 +90,38 @@ function App() {
     }
   }
 
+  const createNewTag = (event) => {
+    if (event.target.value === 'Create New Tag') {
+      let newTag = prompt('Enter new tag name');
+      if (newTag !== null && newTag !== '') {
+        const newTags = [...tags, { id: tags.length + 1, name: newTag }];
+        setTags(newTags);
+        storeTags(newTags);
+      }
+    }
+  }
+
   return (
     <div className='container'>
       <div className='row'>
         <h1>DSP Task List</h1>
       </div>
       <div className='row my-2'>
-        <div className='col-auto'>
+        <div className='col-auto m-1'>
           <button className='btn btn-primary' onClick={() => addTask()}>Add Task</button>
         </div>
-        <div className='col-auto'>
-          <select id='tagInput' className='form-select col-auto' type='' onKeyUp={addTask}>
+        <div className='col-auto m-1'>
+          <select id='tagInput' className='form-select col-auto' type='' onChange={(event) => createNewTag(event)}>
             <option value=''>No Tag</option>
             {tags.map((tag, index) => (
               <option key={index} value={tag.name}>
                 {tag.name}
               </option>
             ))}
+            <option value='Create New Tag'>Create New Tag</option>
           </select>
         </div>
-        <div className='col-auto'>
+        <div className='col-auto m-1'>
           <input id='addTask' className='form-control col-auto' type='text' onKeyUp={addTask}></input>
         </div>
       </div>
