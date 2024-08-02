@@ -5,15 +5,14 @@ function App() {
   const [tasks, setTasks] = useState([])
 
   useEffect(() => {
-    retrieveTasks()
+    const storedTasks = retrieveTasks()
+    setTasks(storedTasks || [])
   }, [])
 
   function retrieveTasks () {
     const tasks = JSON.parse(localStorage.getItem('tasks'))
-    if (tasks) {
-      const sorttedTask = tasks.sort((a, b) => a.priority - b.priority)
-      setTasks(sorttedTask)
-    }
+    if (!tasks) return []
+    return tasks.sort((a, b) => a.priority - b.priority)
   }
 
   function storeTasks (tasks) {
@@ -21,73 +20,49 @@ function App() {
     retrieveTasks()
   }
 
-  function addTask (e) {
-    if (e && e.key !== 'Enter') {
-      return
+  const addTask = (e) => {
+    if (!e || e.key === 'Enter') {
+      const newTask = (e) ? { id: tasks.length + 1, task: e.target.value, priority: 1 } : { id: tasks.length + 1, task: document.getElementById('addTask').value, priority: 1 };
+      setTasks([newTask, ...tasks]);
+      storeTasks([newTask, ...tasks]);
+      document.getElementById('addTask').value = ''; // Clear the input field
     }
-    const task = {
-      task: document.getElementById('addTask').value,
-      priority: 1
+  };
+
+  const handlePriorityChange = (event, task) => {
+    const newPriority = event.target.value;
+    console.log(newPriority);
+    const newTasks = tasks.map(t => t.id === task.id ? { ...t, priority: newPriority } : t);
+    setTasks(newTasks);
+    if (newPriority > 0) {
+      storeTasks(newTasks);
     }
-    if (task === '') {
-      return
+  };
+
+  const increaseTaskPriority = (task) => {
+    const newTasks = tasks.map(t => t.id === task.id ? { ...t, priority: parseInt(t.priority) - 1 } : t);
+    setTasks(newTasks);
+    storeTasks(newTasks);
+    window.location.reload();
+  };
+
+  const decreaseTaskPriority = (task) => {
+    const newTasks = tasks.map(t => t.id === task.id ? { ...t, priority: parseInt(t.priority) + 1 } : t);
+    setTasks(newTasks);
+    storeTasks(newTasks);
+    window.location.reload();
+  };
+
+  const handleCompleteTask = (task) => {
+    const newTasks = tasks.filter(t => t.id !== task.id);
+    setTasks(newTasks);
+    storeTasks(newTasks);
+  };
+
+  const updateTaskList = (event) => {
+    if (event.key === 'Enter') {
+      window.location.reload();
     }
-    setTasks((prevState) => {
-      storeTasks([task, ...prevState])
-      return [task, ...prevState]
-    })
-    document.getElementById('addTask').value = ''
-  }
-
-  function handleCompleteTask (task) {
-    setTasks((prevState) => {
-      const index = prevState.indexOf(task)
-      const newTasks = [...prevState]
-      newTasks.splice(index, 1)
-      storeTasks(newTasks)
-      return newTasks
-    })
-
-  }
-
-  function updateTaskPriority (event, task) {
-    if (event.key !== 'Enter') {
-      return
-    }
-    console.log(event.target.value);
-    task.priority = event.target.value;
-    storeTasks(tasks)
-    console.log(task);
-  }
-
-  function increaseTaskPriority (task) {
-    setTasks((prevState) => {
-      const index = prevState.indexOf(task)
-      if (index === 0) {
-        return prevState
-      }
-      const newTasks = [...prevState]
-      const temp = newTasks[index]
-      newTasks[index] = newTasks[index - 1]
-      newTasks[index - 1] = temp
-      storeTasks(newTasks)
-      return newTasks
-    })
-  }
-
-  function decreaseTaskPriority (task) {
-    setTasks((prevState) => {
-      const index = prevState.indexOf(task)
-      if (index === prevState.length - 1) {
-        return prevState
-      }
-      const newTasks = [...prevState]
-      const temp = newTasks[index]
-      newTasks[index] = newTasks[index + 1]
-      newTasks[index + 1] = temp
-      storeTasks(newTasks)
-      return newTasks
-      })
   }
 
   return (
@@ -115,7 +90,7 @@ function App() {
                   <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4"/>
                 </svg>
               </div>
-              <input type='number' defaultValue={task.priority} onKeyUp={(event) => updateTaskPriority(event, task)}></input>
+              <input type='number' value={task.priority} onKeyUp={(event) => updateTaskList(event)} onChange={(event) => handlePriorityChange(event, task)}></input>
               <p className='ms-2 mb-0 h-auto'>{task.task}</p>
             </div>
             <button className='btn btn-sm btn-primary h-50' type='button' onClick={() => handleCompleteTask(task)}>Complete</button>
