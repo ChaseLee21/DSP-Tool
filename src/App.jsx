@@ -3,6 +3,11 @@ import { useState, useEffect } from 'react'
 
 function App() {
   const [tasks, setTasks] = useState([])
+  const [tags, setTags] = useState([
+    { id: 1, name: 'Smelting'}, 
+    { id: 2, name: 'Manufacturing' }, 
+    { id: 3, name: 'Mining'}, 
+  ])
 
   useEffect(() => {
     const storedTasks = retrieveTasks()
@@ -22,7 +27,10 @@ function App() {
 
   const addTask = (e) => {
     if (!e || e.key === 'Enter') {
-      const newTask = (e) ? { id: tasks.length + 1, task: e.target.value, priority: 1 } : { id: tasks.length + 1, task: document.getElementById('addTask').value, priority: 1 };
+      let newTask = { id: tasks.length + 1, tag: document.getElementById('tagInput').value, priority: 1 };
+      newTask.task = (e) ? e.target.value : document.getElementById('addTask').value;
+      newTask.tag = (newTask.tag === '') ? null : newTask.tag;
+      
       setTasks([newTask, ...tasks]);
       storeTasks([newTask, ...tasks]);
       document.getElementById('addTask').value = ''; // Clear the input field
@@ -75,6 +83,16 @@ function App() {
           <button className='btn btn-primary' onClick={() => addTask()}>Add Task</button>
         </div>
         <div className='col-auto'>
+          <select id='tagInput' className='form-select col-auto' type='' onKeyUp={addTask}>
+            <option value=''>No Tag</option>
+            {tags.map((tag, index) => (
+              <option key={index} value={tag.name}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='col-auto'>
           <input id='addTask' className='form-control col-auto' type='text' onKeyUp={addTask}></input>
         </div>
       </div>
@@ -91,6 +109,7 @@ function App() {
                 </svg>
               </div>
               <input type='number' value={task.priority} onKeyUp={(event) => updateTaskList(event)} onChange={(event) => handlePriorityChange(event, task)}></input>
+              {task.tag && <p className='ms-2 mb-0 h-auto' style={{fontSize: 10}}>{task.tag}</p>}
               <p className='ms-2 mb-0 h-auto'>{task.task}</p>
             </div>
             <button className='btn btn-sm btn-primary h-50' type='button' onClick={() => handleCompleteTask(task)}>Complete</button>
