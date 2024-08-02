@@ -47,7 +47,6 @@ function App() {
       let newTask = { id: tasks.length + 1, tag: document.getElementById('tagInput').value, priority: 1 };
       newTask.task = (e) ? e.target.value : document.getElementById('addTask').value;
       newTask.tag = (newTask.tag === '') ? null : newTask.tag;
-      
       setTasks([newTask, ...tasks]);
       storeTasks([newTask, ...tasks]);
       document.getElementById('addTask').value = ''; // Clear the input field
@@ -90,13 +89,25 @@ function App() {
     }
   }
 
-  const createNewTag = (event) => {
+  const createAndResetTags = (event) => {
     if (event.target.value === 'Create New Tag') {
       let newTag = prompt('Enter new tag name');
       if (newTag !== null && newTag !== '') {
         const newTags = [...tags, { id: tags.length + 1, name: newTag }];
         setTags(newTags);
         storeTags(newTags);
+      }
+    }
+    if (event.target.value === 'Reset Tags') {
+      let reset = confirm('Do you want to reset your tags back to the default tags?');
+      if (reset) {
+        const resetTags = [
+          { id: 1, name: 'Smelting'}, 
+          { id: 2, name: 'Manufacturing' }, 
+          { id: 3, name: 'Mining'}, 
+        ];
+        setTags(resetTags);
+        storeTags(resetTags);
       }
     }
   }
@@ -111,7 +122,7 @@ function App() {
           <button className='btn btn-primary' onClick={() => addTask()}>Add Task</button>
         </div>
         <div className='col-auto m-1'>
-          <select id='tagInput' className='form-select col-auto' type='' onChange={(event) => createNewTag(event)}>
+          <select id='tagInput' className='form-select col-auto' type='' onChange={(event) => createAndResetTags(event)}>
             <option value=''>No Tag</option>
             {tags.map((tag, index) => (
               <option key={index} value={tag.name}>
@@ -119,6 +130,7 @@ function App() {
               </option>
             ))}
             <option value='Create New Tag'>Create New Tag</option>
+            <option value='Reset Tags'>Reset Tags</option>
           </select>
         </div>
         <div className='col-auto m-1'>
