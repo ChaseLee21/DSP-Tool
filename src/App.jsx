@@ -28,8 +28,8 @@ function App() {
       return
     }
     setTasks((prevState) => {
-      storeTasks([...prevState, task])
-      return [...prevState, task]
+      storeTasks([task, ...prevState])
+      return [task, ...prevState]
     })
     document.getElementById('addTask').value = ''
   }
