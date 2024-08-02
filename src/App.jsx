@@ -45,6 +45,10 @@ function App() {
 
   }
 
+  function updateTaskPriority (task) {
+    console.log(task);
+  }
+
   function increaseTaskPriority (task) {
     setTasks((prevState) => {
       const index = prevState.indexOf(task)
@@ -100,6 +104,7 @@ function App() {
                   <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4"/>
                 </svg>
               </div>
+              <input type='number' onChange={() => updateTaskPriority(task)}></input>
               <p className='ms-2 mb-0 h-auto'>{task}</p>
             </div>
             <button className='btn btn-sm btn-primary h-50' type='button' onClick={() => handleCompleteTask(task)}>Complete</button>
