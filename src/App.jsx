@@ -9,21 +9,26 @@ function App() {
   }, [])
 
   function retrieveTasks () {
-    const tasks = localStorage.getItem('tasks')
+    const tasks = JSON.parse(localStorage.getItem('tasks'))
     if (tasks) {
-      setTasks(JSON.parse(tasks))
+      const sorttedTask = tasks.sort((a, b) => a.priority - b.priority)
+      setTasks(sorttedTask)
     }
   }
 
   function storeTasks (tasks) {
     localStorage.setItem('tasks', JSON.stringify(tasks))
+    retrieveTasks()
   }
 
   function addTask (e) {
     if (e && e.key !== 'Enter') {
       return
     }
-    const task = document.getElementById('addTask').value
+    const task = {
+      task: document.getElementById('addTask').value,
+      priority: 1
+    }
     if (task === '') {
       return
     }
@@ -45,7 +50,13 @@ function App() {
 
   }
 
-  function updateTaskPriority (task) {
+  function updateTaskPriority (event, task) {
+    if (event.key !== 'Enter') {
+      return
+    }
+    console.log(event.target.value);
+    task.priority = event.target.value;
+    storeTasks(tasks)
     console.log(task);
   }
 
@@ -104,8 +115,8 @@ function App() {
                   <path d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4"/>
                 </svg>
               </div>
-              <input type='number' onChange={() => updateTaskPriority(task)}></input>
-              <p className='ms-2 mb-0 h-auto'>{task}</p>
+              <input type='number' defaultValue={task.priority} onKeyUp={(event) => updateTaskPriority(event, task)}></input>
+              <p className='ms-2 mb-0 h-auto'>{task.task}</p>
             </div>
             <button className='btn btn-sm btn-primary h-50' type='button' onClick={() => handleCompleteTask(task)}>Complete</button>
           </li>
