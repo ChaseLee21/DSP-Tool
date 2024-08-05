@@ -1,12 +1,14 @@
 import './App.css'
 import { useState, useEffect } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+
 
 function App() {
   const [tasks, setTasks] = useState([])
   const [tags, setTags] = useState([
-    { id: 1, name: 'Smelting'}, 
-    { id: 2, name: 'Manufacturing' }, 
-    { id: 3, name: 'Mining'}, 
+    { id: uuidv4(), name: 'Smelting'}, 
+    { id: uuidv4(), name: 'Manufacturing' }, 
+    { id: uuidv4(), name: 'Mining'}, 
   ])
 
   useEffect(() => {
@@ -30,9 +32,9 @@ function App() {
   function retrieveTags () {
     const tags = JSON.parse(localStorage.getItem('tags'))
     if (!tags) return [
-      { id: 1, name: 'Smelting'}, 
-      { id: 2, name: 'Manufacturing' }, 
-      { id: 3, name: 'Mining'}, 
+      { id: uuidv4(), name: 'Smelting'}, 
+      { id: uuidv4(), name: 'Manufacturing' }, 
+      { id: uuidv4(), name: 'Mining'}, 
     ]
     return tags
   }
@@ -44,7 +46,7 @@ function App() {
 
   const addTask = (e) => {
     if (!e || e.key === 'Enter') {
-      let newTask = { id: tasks.length + 1, tag: document.getElementById('tagInput').value, priority: 1 };
+      let newTask = { id: uuidv4(), tag: document.getElementById('tagInput').value, priority: 1 };
       newTask.task = (e) ? e.target.value : document.getElementById('addTask').value;
       newTask.tag = (newTask.tag === '') ? null : newTask.tag;
       setTasks([newTask, ...tasks]);
